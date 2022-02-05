@@ -1,0 +1,96 @@
+.left{
+	padding: 10% 0;
+}
+
+.right{
+	padding: 10% 5%;
+}
+
+.Total {
+	font-size: 1.5rem;
+	color: white;
+}
+
+.item {
+	background: hsl(71, 75%, 73%);
+	margin: 10px auto;
+	padding: 1% 50px;
+	border-radius: 5px;
+	display: flex;
+	flex-direction: row;
+}
+
+.hidden {
+	display: none;
+}
+
+.Inputs {
+	display: flex;
+	flex-direction: column;
+}
+
+.Subt {
+	background: hsl(178, 57%, 58%);
+	border: none;
+	border-radius: 10px;
+	margin: 0 3px;
+	padding: 0 5px 3px;
+	font-size: 1.5rem;
+}
+
+.Pay {
+	border: none;
+	border-radius: 10px;
+	background: hsl(43, 82%, 56%);
+	width: 80%;
+	font-size: 1.5rem;
+}
+
+.Thank {
+	font-size: 3.5rem;
+	color: white;
+}
+
+.print {
+	border: none;
+	border-radius: 10px;
+	font-size: 1.5rem;
+	width: 60%;
+}
+
+.details{
+	font-size: 2rem;
+	text-align: left;
+	color: white;
+}
+
+.Inputs {
+	font-size: 1.5rem;
+}
+
+.ind {
+	display: flex;
+	flex-direction: row;
+	margin: 10px 0;
+}
+
+.cate {
+	width: 15%;
+}
+
+.input {
+	width: 85%;
+	display: inline;
+}
+
+@media screen and (max-width: 735px) {
+	.checkout-row {
+		flex-direction: column;
+	}
+	.cate {
+		width: 20%;
+	}
+	.input {
+		width: 80%;
+	}
+}

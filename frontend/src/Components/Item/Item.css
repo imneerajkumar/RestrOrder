@@ -1,0 +1,55 @@
+.Item {
+	background: hsl(71, 75%, 73%);
+	margin: 10px auto;
+	width: 90%;
+	max-width: 900px;
+	padding: 1% 50px;
+	border-radius: 5px;
+	display: flex;
+	flex-direction: row;
+}
+
+.images {
+	margin: auto 3px;
+	height: 100px;
+}
+
+.Name {
+	font-size: 1.7rem;
+}
+
+.Details {
+	width: 70%;
+	padding: 5px 10px;
+	text-align: left;
+}
+
+.Order {
+	width: 10%;
+}
+
+.Price {
+	font-size: 1.25rem;
+}
+
+.Add {
+	background: hsl(178, 57%, 58%);
+	border: none;
+	border-radius: 10px;
+}
+
+@media screen and (max-width: 735px) {
+	.Item {
+		padding: 1% 10px;
+	}
+	
+	.images {
+		height: 65px;
+	}
+}
+
+@media screen and (max-width: 500px) {
+	.images {
+		height: 55px;
+	}
+}

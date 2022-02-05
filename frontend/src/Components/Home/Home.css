@@ -1,0 +1,41 @@
+.Home {
+	margin: 5% auto;
+	width: 90%;
+	max-width: 1000px;
+}
+
+.image {
+	width: 100%;
+	border-radius: 30px;
+}
+
+.name {
+	font-size: 4rem;
+	margin-bottom: 100px;
+	color: white;
+	font-weight: 700;
+}
+
+.features {
+	font-size: 2rem;
+	color: hsl(117, 65%, 71%);
+}
+
+.Button {
+	margin: 20px 0;
+	border: none;
+	border-radius: 10px;
+	background: hsl(189, 49%, 42%);
+	padding: 20px;
+	font-size: 1.5rem;
+}
+
+@media screen and (max-width: 735px) {
+	.image {
+		display: none;
+	}
+	.rowHome {
+		flex-direction: column;
+	}
+	
+}
