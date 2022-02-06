@@ -1,55 +1,127 @@
 .Item {
-	background: hsl(71, 75%, 73%);
-	margin: 10px auto;
-	width: 90%;
-	max-width: 900px;
-	padding: 1% 50px;
-	border-radius: 5px;
-	display: flex;
-	flex-direction: row;
+  background: #fdc273;
+  margin: 10px auto;
+  width: 90%;
+  max-width: 900px;
+  padding: 5px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  padding: 3px 15px;
 }
 
-.images {
-	margin: auto 3px;
-	height: 100px;
+.img-container {
+  width: 104px;
+  height: 104px;
+  border-radius: 52px;
+  border: 4px solid #f52c2c;
+  z-index: 1;
+  overflow: "hidden";
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.Name {
-	font-size: 1.7rem;
+.img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50px;
+  object-fit: cover;
 }
 
 .Details {
-	width: 70%;
-	padding: 5px 10px;
-	text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  margin: 0 10px;
+  padding: 10px;
+  text-align: left;
+}
+
+.Name {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0;
+}
+
+.Description {
+  margin-bottom: 0;
 }
 
 .Order {
-	width: 10%;
+  display: flex;
+  width: 75px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .Price {
-	font-size: 1.25rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 0;
 }
 
 .Add {
-	background: hsl(178, 57%, 58%);
-	border: none;
-	border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f52c2c;
+  color: #fff;
+  border: none;
+  height: 30px;
+  width: 30px;
+  border-radius: 15px;
+  font-weight: 900;
+  font-size: 2rem;
+}
+.Add:hover {
+  background-color: #ab2538;
 }
 
-@media screen and (max-width: 735px) {
-	.Item {
-		padding: 1% 10px;
-	}
-	
-	.images {
-		height: 65px;
-	}
+@media screen and (max-width: 790px) {
+  .img-container {
+    width: 66px;
+    height: 66px;
+    border-radius: 33px;
+    border: 2px solid #f52c2c;
+  }
+  .img {
+    height: 64px;
+    width: 64px;
+  }
+  .Details {
+    max-width: 80%;
+    margin: 0;
+  }
+  .Name {
+    font-size: 1.2rem;
+  }
+  .Description {
+    overflow: scroll;
+    overflow-y: hidden;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .Description::-webkit-scrollbar {
+    display: none;
+  }
+  .Price {
+    font-size: 0.8rem;
+  }
+  .Add {
+    height: 20px;
+    width: 20px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1.5rem;
+  }
 }
 
-@media screen and (max-width: 500px) {
-	.images {
-		height: 55px;
-	}
+@media screen and (max-width: 508px) {
+  .Details {
+    max-width: 70%;
+    margin: 0;
+  }
 }

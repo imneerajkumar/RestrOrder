@@ -21,8 +21,8 @@ function Menu(props) {
 	
 	return (
 		<div className="Menu">
-			<p className="menu"> Menu </p>
-			{list.map((item,key) => <Item item={item} index={key} />)}
+			<p className="menu">MENU</p>
+			{list.map((item,key) => <Item item={item} key={key} index={key} />)}
 		</div>
 	);
 }

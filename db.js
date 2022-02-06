@@ -9,8 +9,7 @@ const menuSchema = {
 	logo: String,
 	name: String,
 	description: String,
-	price: String,
-	category: String
+	price: String
 };
 const Menu = mongoose.model("Menu",menuSchema);
 
@@ -18,7 +17,8 @@ const invoiceSchema = {
   list: [{key: Number, name: String, price: String, qty: Number}], 
   name: String, 
   number: String, 
-  total: Number
+  total: Number,
+  mode: String
 };
 const Invoice = mongoose.model("Invoice",invoiceSchema);
 

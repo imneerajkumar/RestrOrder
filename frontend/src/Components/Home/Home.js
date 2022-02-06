@@ -9,30 +9,30 @@ function Home() {
 		history.push("/menu");
 	}
 	
-	return <div className="Home">
-		<div className="container">
-		  <div className="row rowHome">
-			<div className="col">
-				<div className="name">
-					Restro Order
-				</div>
-				<div className="features">
-					Best Dishes in Town
-					<br />
-					Made with Love
+	return (
+		<div className="Home">
+			<div className="container home">
+				<div className="row rowHome">
+					<div className="col details">
+						<img className="image" src={process.env.PUBLIC_URL + '/restaurant.png'} alt="Logo" />
+					</div>
+					<div className="col details">
+						<div className="name">
+							RestrOrder
+						</div>
+						<div className="features">
+							"Best Dishes in the Town, Serve with love."
+						</div>
+						<div>
+							<button className="Button" onClick={handleClick}>
+								Hungry? Order Now
+							</button>
+						</div>
+					</div>
 				</div>
 			</div>
-			<div className="col">
-				<div className="Image">
-					<img className="image" src={process.env.PUBLIC_URL + '/restaurant.png'} alt="Logo" />
-				</div>
-				<div>
-					<button className="Button" onClick={handleClick}>Order Now</button>
-				</div>
-			</div>
-		  </div>
 		</div>
-	</div>
+	);
 }
 
 export default Home;
