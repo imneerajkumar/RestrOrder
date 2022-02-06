@@ -71,24 +71,24 @@
 }
 .order {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  width: 150px;
+  justify-content: space-between;
+  width: 100%;
+  padding-right: 15px;
 }
 .Price {
-  font-weight: 500;
-  font-size: 1rem;
+  font-weight: 600;
+  font-size: 1.2rem;
 }
 .qty {
-  margin: 0;
+  margin: 0 0 0 5px;
   font-size: 1.2rem;
   font-weight: 600;
 }
 .changeBtns {
   display: flex;
-  flex-direction: row;
-  justify-content: center;
   align-items: center;
+  width: 100px;
 }
 .change {
   display: flex;
@@ -102,7 +102,7 @@
   border-radius: 13px;
   font-weight: 600;
   font-size: 1.5rem;
-  margin: 0 5px;
+  margin: 0 3px;
 }
 .change:hover {
   background-color: #ab2538;
@@ -151,8 +151,8 @@
   .upi {
     margin-left: 0;
   }
-  .order {
-    width: 120px;
+  .changeBtns {
+    width: 80px;
   }
   .change {
     height: 20px;

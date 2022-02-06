@@ -225,14 +225,14 @@ function Checkout(props) {
 						<div className="Items">
 							{list.map((item,key) => {
 								return <div className="item" key={key}>
-									<p className="Name">{item.name}</p>
 									<div className="order">
+										<p className="Name">{item.name}</p>
 										<p className="Price">{"₹ " +item.price}</p>
-										<div className={"changeBtns "+hideBtn}>
-											<button name={item.key} className={"change"} onClick={handleSubtract}>-</button>
-											<button name={item.key} className={"change"} onClick={handleAdd}>+</button>
-										</div>
-										<p className={"qty "+hideBtn} >{item.qty}</p>
+									</div>
+									<div className={"changeBtns "+hideBtn}>
+										<button name={item.key} className="change" onClick={handleSubtract}>-</button>
+										<button name={item.key} className="change" onClick={handleAdd}>+</button>
+										<p className={"qty"} >{item.qty}</p>
 									</div>
 								</div>
 							})}

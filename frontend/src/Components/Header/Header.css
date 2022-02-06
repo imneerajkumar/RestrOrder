@@ -1,4 +1,7 @@
 .Header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   color: white;
   width: 100%;
   background-color: #ab2538;
@@ -10,8 +13,6 @@
   font-weight: 900 !important;
 }
 
-@media screen and (max-width: 990px) {
-  .navbar > .container-fluid {
-    align-items: flex-start !important;
-  }
+.navbar-collapse {
+  flex-grow: unset !important;
 }
