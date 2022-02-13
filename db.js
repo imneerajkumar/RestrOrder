@@ -18,8 +18,15 @@ const invoiceSchema = {
   name: String, 
   number: String, 
   total: Number,
-  mode: String
+  mode: String,
+  served: Boolean
 };
 const Invoice = mongoose.model("Invoice",invoiceSchema);
 
-module.exports = {Menu, Invoice};
+const adminSchema = {
+  adminId: String,
+  password: String
+};
+const Admin = mongoose.model("Admin", adminSchema)
+
+module.exports = {Menu, Invoice, Admin};

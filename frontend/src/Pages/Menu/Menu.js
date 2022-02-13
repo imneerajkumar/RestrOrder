@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import axios from "axios";
-import Item from "../Item/Item";
+import Item from "../../Components/Item/Item";
 import "./Menu.css";
 
 function Menu(props) {

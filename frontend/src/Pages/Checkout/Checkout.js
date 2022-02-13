@@ -155,7 +155,8 @@ function Checkout(props) {
 			name: name, 
 			number: number, 
 			total: Number(localStorage.getItem("total")),
-			mode: mode
+			mode: mode,
+			served: false
 		});	
 	}
 	
