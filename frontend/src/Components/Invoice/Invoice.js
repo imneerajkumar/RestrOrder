@@ -8,7 +8,7 @@ function Invoice({ invoice, index }) {
   const handleClick = () => {
     setCut("cut");
 
-    axios.patch("/admin", {
+    axios.patch("/invoices", {
       id: invoice._id,
       served: true
     });

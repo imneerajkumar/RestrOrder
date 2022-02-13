@@ -36,20 +36,23 @@ app.post('/login', async (req, res) => {
           expiresIn: "2h",
         }
       );
-			res.status(200).json({ token: token });
+			res.json({ token: token });
     }
+		else {
+			res.json({ message: "Wrong Id or password"})
+		}
 	} catch (err) {
 		console.log(err);
 	}
 });
 
-app.get('/admin', (req, res) => {
+app.get('/invoices', (req, res) => {
 	Invoice.find().then((item) => {
 		return res.json(item)
 	})
 });
 
-app.patch('/admin', (req, res) => {
+app.patch('/invoices', (req, res) => {
 	const id = req.body.id;
 	const served = req.body.served;
 

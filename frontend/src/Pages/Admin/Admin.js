@@ -10,8 +10,8 @@ function Admin(props) {
   const[invoices, setInvoices] = useState([]);
 
   useEffect(() => {
-    if(isAuth){
-      axios.get("/admin").then((res) => {
+    if(isAuth) {
+      axios.get("/invoices").then((res) => {
         var data =res.data;
         setInvoices(data.filter((item) => {
           return !item.served
@@ -42,14 +42,12 @@ function Admin(props) {
 
       if (response.data.token){
         setIsAuth(true);
-      }   
+      } else {
+        giveAlert(response.data.message);
+      }
     } 
     catch (error) {
-      if (password.length === 0){
-        giveAlert("Missing Password");
-      } else {
-        giveAlert("Wrong email or password");
-      }
+      giveAlert(error.message);
     }  
   };
 
@@ -57,7 +55,7 @@ function Admin(props) {
     <div>
       {isAuth===false && <Login handleLogin={handleLogin} />}
       {isAuth===true && 
-        invoices.map((item, key) => <Invoice key={key} index={key} invoice={item} />)
+        invoices?.map((item, key) => <Invoice key={key} index={key} invoice={item} />)
       }   
     </div>
   );
