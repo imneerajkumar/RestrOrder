@@ -51,18 +51,18 @@ function Checkout(props) {
 	}
 
 	useEffect(() => {
+		var total=localStorage.getItem("total");
+		if(total <= 0){
+			giveAlert("No order for Checkout");
+			history.push('/');
+		}
+
 		if(list.length===0 && localStorage.getItem("order")!==null && localStorage.getItem("list")!==null)
 		{
 			var temp = [];
 			var order=JSON.parse(localStorage.getItem("order"));
 			var li=JSON.parse(localStorage.getItem("list"));
-			var total=localStorage.getItem("total");
-
-			if(total <= 0){
-				giveAlert("No order for Checkout");
-				history.push('/');
-			}
-			
+	
 			order.forEach((val,key) => {
 				if(val>0)
 					temp.push({key: key, name: li[key].name,price: li[key].price, qty: val})
@@ -101,7 +101,7 @@ function Checkout(props) {
 		total-=Number(li[key].price);
 		if(total <= 0){
 			giveAlert("No order for Checkout");
-			history.push('/');
+			history.push('/menu');
 		}
 
 		localStorage.setItem("order",JSON.stringify(order));
