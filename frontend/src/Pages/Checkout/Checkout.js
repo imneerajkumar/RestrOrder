@@ -4,6 +4,7 @@ import axios from "axios";
 import jsPDF from "jspdf";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Loader from "../../Components/UI/Loader";
 import "./Checkout.css";
 
 toast.configure();
@@ -13,6 +14,7 @@ function Checkout(props) {
 	const [[name,number], setDetails] = useState(["",""]);
 	const [hideCol, setHideCol] = useState("hidden");
 	const [hideBtn, setHideBtn] = useState("show");
+	const [loading, setLoading] = useState(true);
 
 	function giveAlert(message) {
 		toast.error(`Error: ${message}`, {
@@ -54,7 +56,7 @@ function Checkout(props) {
 		var total=localStorage.getItem("total");
 		if(total <= 0){
 			giveAlert("No order for Checkout");
-			history.push('/');
+			history.push('/menu')
 		}
 
 		if(list.length===0 && localStorage.getItem("order")!==null && localStorage.getItem("list")!==null)
@@ -68,6 +70,7 @@ function Checkout(props) {
 					temp.push({key: key, name: li[key].name,price: li[key].price, qty: val})
 			})
 			setList(temp);
+			setTimeout(() => setLoading(false), 1500);
 		}	
 	}, [list ,history]);
 
@@ -195,55 +198,57 @@ function Checkout(props) {
 	
 	return (
 		<div className="Checkout">
-			<div className="container checkout">
-				<div className="row checkout-row">
-					<div className={"col left "+hideCol}>
-						<div className="Thank">
-							THANK YOU FOR ORDERING
-						</div>
-						<div className={"fills "+hideCol}>
-							<div className="inst">
-								Please fill the details below:
+			{loading ? <Loader /> : (
+				<div className="container checkout">
+					<div className="row checkout-row">
+						<div className={"col left "+hideCol}>
+							<div className="Thank">
+								THANK YOU FOR ORDERING
 							</div>
-							<div className="ind">
-								<div className="label">Name :</div>
-								<input className="input" type="text" value={name} onChange={handleName} />
-							</div>
-							<div className="ind">
-								<div className="label">Phone:</div>
-								<input className="input" type="number" value={number} onChange={handlePhone} />
-							</div>
-						</div>
-						<div className="bill">
-							<button className="pay cash" onClick={payCash}>Cash Payment</button>
-							<button className="pay upi" onClick={payOnline}>UPI - PayTM, PhonePe..</button>
-						</div>
-					</div>
-					<div className="col right">
-						<div className="Total">
-							Total: {"₹"+localStorage.getItem("total")}
-						</div>
-						<div className="Items">
-							{list.map((item,key) => {
-								return <div className="item" key={key}>
-									<div className="order">
-										<p className="Name">{item.name}</p>
-										<p className="Price">{"₹ " +item.price}</p>
-									</div>
-									<div className={"changeBtns "+hideBtn}>
-										<button name={item.key} className="change" onClick={handleSubtract}>-</button>
-										<button name={item.key} className="change" onClick={handleAdd}>+</button>
-										<p className={"qty"} >{item.qty}</p>
-									</div>
+							<div className={"fills "+hideCol}>
+								<div className="inst">
+									Please fill the details below:
 								</div>
-							})}
+								<div className="ind">
+									<div className="label">Name :</div>
+									<input className="input" type="text" value={name} onChange={handleName} />
+								</div>
+								<div className="ind">
+									<div className="label">Phone:</div>
+									<input className="input" type="number" value={number} onChange={handlePhone} />
+								</div>
+							</div>
+							<div className="bill">
+								<button className="pay cash" onClick={payCash}>Cash Payment</button>
+								<button className="pay upi" onClick={payOnline}>UPI - PayTM, PhonePe..</button>
+							</div>
 						</div>
-						<button className={"confirm "+hideBtn} onClick={checkout}> 
-							Checkout
-						</button>
-					</div>					
+						<div className="col right">
+							<div className="Total">
+								Total: {"₹"+localStorage.getItem("total")}
+							</div>
+							<div className="Items">
+								{list.map((item,key) => {
+									return <div className="item" key={key}>
+										<div className="order">
+											<p className="Name">{item.name}</p>
+											<p className="Price">{"₹ " +item.price}</p>
+										</div>
+										<div className={"changeBtns "+hideBtn}>
+											<button name={item.key} className="change" onClick={handleSubtract}>-</button>
+											<button name={item.key} className="change" onClick={handleAdd}>+</button>
+											<p className={"qty"} >{item.qty}</p>
+										</div>
+									</div>
+								})}
+							</div>
+							<button className={"confirm "+hideBtn} onClick={checkout}> 
+								Checkout
+							</button>
+						</div>					
+					</div>
 				</div>
-			</div>
+			)}
 		</div>
 	)
 }

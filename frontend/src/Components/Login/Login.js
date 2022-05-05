@@ -1,16 +1,28 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import './Login.css';
 
 function Login(props) {
   const [admin, setAdmin] = useState("");
   const [password, setPassword] = useState("");
-  
-  const handleClick = () => {
+
+  const handleClick = useCallback(() => {
     props.handleLogin(admin, password);
     setAdmin("");
     setPassword("");
-  };
+  }, [admin, password, props]);
 
+  useEffect(() => {
+    const listener = event => {
+      if (event.code === "Enter" || event.code === "NumpadEnter") {
+        handleClick();
+      }
+    };
+    document.addEventListener("keydown", listener);
+    return () => {
+      document.removeEventListener("keydown", listener);
+    };
+  }, [handleClick]);
+  
   return (
     <div className='login'>
       <h1 className='title'>Welcome Back</h1>

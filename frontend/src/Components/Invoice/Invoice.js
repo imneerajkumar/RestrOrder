@@ -3,11 +3,10 @@ import axios from 'axios';
 import './Invoice.css';
 
 function Invoice({ invoice, index }) {
-  const [cut, setCut] = useState("not");
+  const [cut, setCut] = useState(invoice.served ? "cut" : "");
 
   const handleClick = () => {
-    setCut("cut");
-
+    setCut("cut")
     axios.patch("/invoices", {
       id: invoice._id,
       served: true
