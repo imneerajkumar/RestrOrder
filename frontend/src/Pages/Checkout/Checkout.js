@@ -7,6 +7,20 @@ import 'react-toastify/dist/ReactToastify.css';
 import Loader from "../../Components/UI/Loader";
 import "./Checkout.css";
 
+function loadScript(src) {
+	return new Promise((resolve) => {
+		const script = document.createElement('script')
+		script.src = src
+		script.onload = () => {
+			resolve(true)
+		}
+		script.onerror = () => {
+			resolve(false)
+		}
+		document.body.appendChild(script)
+	})
+}
+
 toast.configure();
 function Checkout(props) {
 	const history = useHistory();
@@ -128,7 +142,6 @@ function Checkout(props) {
 	function printBill() {
 		var total = localStorage.getItem("total");
 		const doc = new jsPDF('p', 'pt');
-    doc.addFont('helvetica', 'normal')
 
     doc.text(200, 30, 'Restro Order - Your Bill')
     doc.text(70, 50, `Name: ${name}`);
@@ -176,13 +189,53 @@ function Checkout(props) {
 		}
 	}
 
+	function onlineSuccess() {
+		sendInvoice("Online");
+		printBill();
+		giveSucess();
+		clear();
+		history.push("/");
+	}
+
+	async function displayRazorpay() {
+		const res = await loadScript('https://checkout.razorpay.com/v1/checkout.js')
+
+		if (!res) {
+			alert('Razorpay SDK failed to load. Are you online?')
+			return
+		}
+
+		const response = await axios.post('/razorpay',{
+			amount: Number(localStorage.getItem("total"))
+		});
+
+		const options = {
+			key: process.env.RAZOR_ID,
+			currency: response.data.currency,
+			amount: response.data.amount.toString(),
+			order_id: response.data.id,
+			name: 'Your Order',
+			description: 'Thank you for Ordering.',
+			image: '/logo',
+			handler: function (response) {
+				alert(response.razorpay_payment_id)
+				alert(response.razorpay_order_id)
+				alert(response.razorpay_signature)
+				onlineSuccess()
+			},
+			prefill: {
+				name: name,
+				email: 'example@gmail.com',
+				phone_number: number
+			}
+		}
+		const paymentObject = new window.Razorpay(options)
+		paymentObject.open()
+	}
+
 	function payOnline() {
 		if(name.length>0 && number.length===10){
-			// If online Payment is successful
-			sendInvoice("Online");
-			giveSucess();
-			clear();
-			history.push("/");
+			displayRazorpay();		
 		}
 		else {
 			giveAlert("Please fill the correct details");

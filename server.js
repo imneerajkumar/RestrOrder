@@ -5,11 +5,46 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const cors = require("cors");
 const path = require('path');
+const shortid = require('shortid')
+const Razorpay = require('razorpay')
 const Port = process.env.PORT || 5000;
 const { Invoice, Menu, Admin } = require('./db');
 
 app.use(cors());
 app.use(express.json());
+
+const razorpay = new Razorpay({
+	key_id: process.env.RAZOR_ID,
+	key_secret: process.env.RAZOR_SECRET
+});
+
+app.get('/logo', (req, res) => {
+	res.sendFile(path.join(__dirname, 'restaurant.png'))
+});
+
+app.post('/razorpay', async (req, res) => {
+	const payment_capture = 1
+	const amount = req.body.amount;
+	const currency = 'INR';
+
+	const options = {
+		amount: amount * 100,
+		currency,
+		receipt: shortid.generate(),
+		payment_capture
+	}
+
+	try {
+		const response = await razorpay.orders.create(options)
+		res.json({
+			id: response.id,
+			currency: response.currency,
+			amount: response.amount
+		})
+	} catch (error) {
+		console.log(error)
+	}
+});
 
 app.get('/loadmenu', function (req,res){
 	Menu.find().then((item) => {
