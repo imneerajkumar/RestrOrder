@@ -4,6 +4,7 @@ import axios from "axios";
 import Item from "../../Components/Item/Item";
 import Loader from "../../Components/UI/Loader";
 import Order from "../../Components/UI/Order";
+import { API_URL } from '../../api-manager';
 import "./Menu.css";
 
 function Menu(props) {
@@ -12,7 +13,7 @@ function Menu(props) {
 	const history = useHistory();
 
 	useEffect(() => {
-		axios.get("/loadmenu").then((res) => {
+		axios.get(`${API_URL}/loadmenu`).then((res) => {
 			setList(res.data);	
 			localStorage.setItem("list",JSON.stringify(list));
 			setTimeout(() => setLoading(false), 1500);

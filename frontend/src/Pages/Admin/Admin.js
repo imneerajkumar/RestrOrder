@@ -6,6 +6,7 @@ import Invoice from '../../Components/Invoice/Invoice';
 import Loader from "../../Components/UI/Loader";
 import 'react-toastify/dist/ReactToastify.css';
 import Logout from '../../Components/UI/Logout';
+import { API_URL } from '../../api-manager';
 
 function Admin(props) {
   const [isAuth, setIsAuth] = useState(false);
@@ -17,7 +18,7 @@ function Admin(props) {
     const token = localStorage.getItem("token");
     if(token) {
       setIsAuth(true);
-      axios.get("/invoices").then((res) => {
+      axios.get(`${API_URL}/invoices`).then((res) => {
         var data =res.data;
         setInvoices(data.filter((item) => {
           return !item.served

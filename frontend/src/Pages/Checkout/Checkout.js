@@ -5,6 +5,7 @@ import jsPDF from "jspdf";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loader from "../../Components/UI/Loader";
+import { API_URL } from '../../api-manager';
 import "./Checkout.css";
 
 function loadScript(src) {
@@ -166,7 +167,7 @@ function Checkout(props) {
 	}
 
 	function sendInvoice(mode) {
-		axios.post("/print",{
+		axios.post(`${API_URL}/print`,{
 			list: list, 
 			name: name, 
 			number: number, 

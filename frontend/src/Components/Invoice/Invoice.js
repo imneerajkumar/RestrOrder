@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { API_URL } from '../../api-manager';
 import './Invoice.css';
 
 function Invoice({ invoice, index }) {
@@ -7,7 +8,7 @@ function Invoice({ invoice, index }) {
 
   const handleClick = () => {
     setCut("cut")
-    axios.patch("/invoices", {
+    axios.patch(`${API_URL}/invoices`, {
       id: invoice._id,
       served: true
     });
