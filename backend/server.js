@@ -47,14 +47,22 @@ app.post("/razorpay", async (req, res) => {
 });
 
 app.get("/loadmenu", function (req, res) {
-  Menu.find().then((item) => {
-    return res.json(item);
-  });
+  try {
+    Menu.find().then((item) => {
+      return res.json(item);
+    });
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 app.post("/print", (req, res) => {
-  var obj = new Invoice(req.body);
-  obj.save();
+  try {
+    var obj = new Invoice(req.body);
+    obj.save();
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 app.post("/login", async (req, res) => {
