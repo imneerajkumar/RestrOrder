@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
 import axios from "axios";
 import Item from "../../Components/Item/Item";
 import Loader from "../../Components/UI/Loader";
@@ -9,16 +8,19 @@ import "./Menu.css";
 function Menu(props) {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const history = useHistory();
+
+  const getMenu = async () => {
+    const url = process.env.REACT_APP_API_URL;
+    await axios.get(`${url}/loadmenu`).then((res) => {
+      setList(res.data);
+      localStorage.setItem("list", JSON.stringify(res.data));
+    });
+    setTimeout(() => setLoading(false), 1500);
+  };
 
   useEffect(() => {
-    const url = process.env.REACT_APP_API_URL;
-    axios.get(`${url}/loadmenu`).then((res) => {
-      setList(res.data);
-      localStorage.setItem("list", JSON.stringify(list));
-      setTimeout(() => setLoading(false), 1500);
-    });
-  }, [list]);
+    getMenu();
+  }, []);
 
   if (
     localStorage.getItem("order") === null ||
@@ -41,7 +43,7 @@ function Menu(props) {
           {list?.map((item, key) => (
             <Item item={item} key={key} index={key} />
           ))}
-          <Order onClick={() => history.push("/checkout")} />
+          <Order />
         </div>
       )}
     </div>

@@ -6,7 +6,6 @@ import Invoice from "../../Components/Invoice/Invoice";
 import Loader from "../../Components/UI/Loader";
 import "react-toastify/dist/ReactToastify.css";
 import Logout from "../../Components/UI/Logout";
-import { API_URL } from "../../api-manager";
 
 function Admin(props) {
   const [isAuth, setIsAuth] = useState(false);
@@ -16,9 +15,10 @@ function Admin(props) {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const url = process.env.REACT_APP_API_URL;
     if (token) {
       setIsAuth(true);
-      axios.get(`${API_URL}/invoices`).then((res) => {
+      axios.get(`${url}/invoices`).then((res) => {
         var data = res.data;
         setInvoices(
           data.filter((item) => {
