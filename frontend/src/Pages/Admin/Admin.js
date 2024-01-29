@@ -6,12 +6,15 @@ import Invoice from "../../Components/Invoice/Invoice";
 import Loader from "../../Components/UI/Loader";
 import "react-toastify/dist/ReactToastify.css";
 import Logout from "../../Components/UI/Logout";
+import EditMenu from "../../Components/EditMenu/EditMenu";
+import "./Admin.css";
 
 function Admin(props) {
   const [isAuth, setIsAuth] = useState(false);
   const [invoices, setInvoices] = useState([]);
   const [servedInvoices, setServedInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState("invoice");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -87,12 +90,26 @@ function Admin(props) {
       {!loading && isAuth === true && (
         <>
           <Logout onClick={handleLogout} />
-          {invoices?.map((item, key) => (
-            <Invoice key={key} index={key} invoice={item} />
-          ))}
-          {servedInvoices?.map((item, key) => (
-            <Invoice key={key} index={key} invoice={item} />
-          ))}
+          <div className="admin-tabs">
+            <div className="tab" onClick={() => setTab("invoice")}>
+              Orders
+            </div>
+            <div className="tab" onClick={() => setTab("menu")}>
+              Menu
+            </div>
+          </div>
+          {tab === "invoice" ? (
+            <div>
+              {invoices?.map((item, key) => (
+                <Invoice key={key} index={key} invoice={item} />
+              ))}
+              {servedInvoices?.map((item, key) => (
+                <Invoice key={key} index={key} invoice={item} />
+              ))}
+            </div>
+          ) : (
+            <EditMenu />
+          )}
         </>
       )}
     </div>

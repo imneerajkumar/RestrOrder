@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const { Admin, Invoice } = require("../model");
+const { Admin, Invoice, Menu } = require("../model");
 
 const adminLogin = async (req, res) => {
   try {
@@ -35,9 +35,54 @@ const updateInvoice = (req, res) => {
   const id = req.body.id;
   const served = req.body.served;
 
-  Invoice.findOneAndUpdate({ _id: id }, { served: served }, () => {
-    console.log("Order marked as served.");
+  Invoice.findOneAndUpdate({ _id: id }, { served: served }, (err) => {
+    if (err) {
+      res.json({ message: err.message });
+    }
+    res.json({ message: "Order marked as served" });
   });
 };
 
-module.exports = { adminLogin, getInvoices, updateInvoice };
+const updatePayment = (req, res) => {
+  const id = req.body.id;
+  const paid = req.body.paid;
+
+  Invoice.findOneAndUpdate({ _id: id }, { paid: paid }, (err) => {
+    if (err) {
+      res.json({ message: err.message });
+    }
+    res.json({ message: "Marked as paid" });
+  });
+};
+
+const updateMenu = (req, res) => {
+  const id = req.body.id;
+  const item = req.body.item;
+
+  Menu.findOneAndUpdate({ _id: id }, { $set: item }, (err) => {
+    if (err) {
+      res.json({ message: err.message });
+    }
+    res.json({ message: "Item Updated" });
+  });
+};
+
+const deleteItem = (req, res) => {
+  const id = req.params.id;
+
+  Menu.findOneAndDelete({ _id: id }, (err) => {
+    if (err) {
+      res.json({ message: err.message });
+    }
+    res.json({ message: "Item Deleted" });
+  });
+};
+
+module.exports = {
+  adminLogin,
+  getInvoices,
+  updateInvoice,
+  updatePayment,
+  updateMenu,
+  deleteItem,
+};

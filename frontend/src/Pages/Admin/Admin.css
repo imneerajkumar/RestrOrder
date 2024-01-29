@@ -1,0 +1,16 @@
+.admin-tabs {
+  width: 100%;
+  display: flex;
+  background-color: #ab2538;
+  color: #fff;
+  margin-bottom: 25px;
+  position: sticky;
+  top: 3.8rem;
+  z-index: 100;
+}
+.tab {
+  width: 100%;
+  border: 1px solid black;
+  padding: 10px;
+  cursor: pointer;
+}

@@ -25,7 +25,7 @@ toast.configure();
 function Checkout(props) {
   const history = useHistory();
   const [list, setList] = useState([]);
-  const [[name, number], setDetails] = useState(["", ""]);
+  const [[name, number, table], setDetails] = useState(["", "", ""]);
   const [hideCol, setHideCol] = useState("hidden");
   const [hideBtn, setHideBtn] = useState("show");
   const [loading, setLoading] = useState(true);
@@ -150,11 +150,15 @@ function Checkout(props) {
   }
 
   function handleName(e) {
-    setDetails([e.target.value, number]);
+    setDetails([e.target.value, number, table]);
   }
 
   function handlePhone(e) {
-    setDetails([name, e.target.value]);
+    setDetails([name, e.target.value, table]);
+  }
+
+  function handleTable(e) {
+    setDetails([name, number, e.target.value]);
   }
 
   function printBill() {
@@ -197,8 +201,10 @@ function Checkout(props) {
       list: list,
       name: name,
       number: number,
+      table: table,
       total: Number(localStorage.getItem("total")),
       mode: mode,
+      paid: mode === "Online" ? true : false,
       served: false,
     });
   }
@@ -305,6 +311,16 @@ function Checkout(props) {
                     type="number"
                     value={number}
                     onChange={handlePhone}
+                    maxLength={10}
+                  />
+                </div>
+                <div className="ind">
+                  <div className="label">Table:</div>
+                  <input
+                    className="input"
+                    type="number"
+                    value={table}
+                    onChange={handleTable}
                   />
                 </div>
               </div>
