@@ -11,7 +11,7 @@ function Menu(props) {
 
   const getMenu = async () => {
     const url = process.env.REACT_APP_API_URL;
-    await axios.get(`${url}/loadmenu`).then((res) => {
+    await axios.get(`${url}/user/loadmenu`).then((res) => {
       setList(res.data);
       localStorage.setItem("list", JSON.stringify(res.data));
     });

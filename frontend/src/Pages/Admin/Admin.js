@@ -18,7 +18,7 @@ function Admin(props) {
     const url = process.env.REACT_APP_API_URL;
     if (token) {
       setIsAuth(true);
-      axios.get(`${url}/invoices`).then((res) => {
+      axios.get(`${url}/admin/invoices`).then((res) => {
         var data = res.data;
         setInvoices(
           data.filter((item) => {
@@ -54,7 +54,7 @@ function Admin(props) {
     try {
       setLoading(true);
       const url = process.env.REACT_APP_API_URL;
-      const response = await axios.post(`${url}/login`, {
+      const response = await axios.post(`${url}/admin/login`, {
         admin: admin,
         password: password,
       });

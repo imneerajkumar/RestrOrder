@@ -8,7 +8,7 @@ function Invoice({ invoice, index }) {
   const handleClick = () => {
     const url = process.env.REACT_APP_API_URL;
     setCut("cut");
-    axios.patch(`${url}/invoices`, {
+    axios.patch(`${url}/admin/markserved`, {
       id: invoice._id,
       served: true,
     });

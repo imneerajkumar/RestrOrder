@@ -1,106 +1,40 @@
 require("dotenv").config();
 const express = require("express");
-const app = express();
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
 const cors = require("cors");
 const path = require("path");
-const shortid = require("shortid");
-const Razorpay = require("razorpay");
+const mongoose = require("mongoose");
+const userRouter = require("./routes/userRouter");
+const adminRouter = require("./routes/adminRouter");
+
 const Port = process.env.PORT || 5000;
-const { Invoice, Menu, Admin } = require("./db");
+const url = process.env.MONGO_URL;
 
-app.use(cors());
+const app = express();
 app.use(express.json());
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZOR_ID,
-  key_secret: process.env.RAZOR_SECRET,
-});
+mongoose
+  .connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log("Mongodb is conneccted");
+  })
+  .catch((e) => {
+    console.log("Mogodb not connected");
+  });
 
-app.get("/logo", (req, res) => {
+app.get("/api/logo", (req, res) => {
   res.sendFile(path.join(__dirname, "/restaurant.png"));
 });
 
-app.post("/razorpay", async (req, res) => {
-  const payment_capture = 1;
-  const amount = req.body.amount;
-  const currency = "INR";
+app.use("/api/user", userRouter);
+app.use("/api/admin", adminRouter);
 
-  const options = {
-    amount: amount * 100,
-    currency,
-    receipt: shortid.generate(),
-    payment_capture,
-  };
-
-  try {
-    const response = await razorpay.orders.create(options);
-    res.json({
-      id: response.id,
-      currency: response.currency,
-      amount: response.amount,
-    });
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-app.get("/loadmenu", function (req, res) {
-  try {
-    Menu.find().then((item) => {
-      return res.json(item);
-    });
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-app.post("/print", (req, res) => {
-  try {
-    var obj = new Invoice(req.body);
-    obj.save();
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-app.post("/login", async (req, res) => {
-  try {
-    const adminId = req.body.admin;
-    const password = req.body.password;
-    const admin = await Admin.findOne({ adminId });
-
-    if (admin && (await bcrypt.compare(password, admin.password))) {
-      const token = jwt.sign(
-        { admin_id: admin._id, adminId },
-        process.env.TOKEN,
-        {
-          expiresIn: "2h",
-        }
-      );
-      res.json({ token: token });
-    } else {
-      res.json({ message: "Wrong Id or password" });
-    }
-  } catch (err) {
-    console.log(err);
-  }
-});
-
-app.get("/invoices", (req, res) => {
-  Invoice.find().then((item) => {
-    return res.json(item);
-  });
-});
-
-app.patch("/invoices", (req, res) => {
-  const id = req.body.id;
-  const served = req.body.served;
-
-  Invoice.findOneAndUpdate({ _id: id }, { served: served }, () => {
-    console.log("Order marked as served.");
-  });
+app.get("/", (req, res) => {
+  res.send("Api is running");
 });
 
 app.listen(Port, () => {

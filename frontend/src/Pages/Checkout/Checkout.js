@@ -193,7 +193,7 @@ function Checkout(props) {
 
   function sendInvoice(mode) {
     const url = process.env.REACT_APP_API_URL;
-    axios.post(`${url}/print`, {
+    axios.post(`${url}/user/print`, {
       list: list,
       name: name,
       number: number,
@@ -233,7 +233,7 @@ function Checkout(props) {
       return;
     }
     const url = process.env.REACT_APP_API_URL;
-    const response = await axios.post(`${url}/razorpay`, {
+    const response = await axios.post(`${url}/user/razorpay`, {
       amount: Number(localStorage.getItem("total")),
     });
 
@@ -246,9 +246,11 @@ function Checkout(props) {
       description: "Thank you for Ordering.",
       image: `${url}/logo`,
       handler: function (response) {
-        alert(response.razorpay_payment_id);
-        alert(response.razorpay_order_id);
-        alert(response.razorpay_signature);
+        alert(
+          `PaymentId: ${response.razorpay_payment_id}`,
+          `OrderId: ${response.razorpay_order_id}`,
+          `Signature: ${response.razorpay_signature}`
+        );
         onlineSuccess();
       },
       prefill: {
