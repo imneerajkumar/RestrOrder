@@ -1,62 +1,20 @@
 import React, { useState } from "react";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
-import { Modal } from "react-bootstrap";
+import CustomToast from "../UI/CustomToast";
 import "./Item.css";
 
-toast.configure();
-function Item({ item, index, editable = false }) {
-  const url = process.env.REACT_APP_API_URL;
-  const [show, setShow] = useState(false);
-  const [formValues, setFormValues] = useState({});
-
-  const handleShow = (item) => {
-    setFormValues({
-      logo: item.logo,
-      name: item.name,
-      description: item.description,
-      price: item.price,
-      category: item.category,
-      veg: item.veg,
-    });
-    setShow(true);
-  };
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-
-    setFormValues((prevValues) => ({
-      ...prevValues,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  const editItem = () => {
-    axios.put(`${url}/admin/updatemenu`, {
-      id: item._id,
-      item: formValues,
-    });
-    setShow(!show);
-  };
-
-  const deleteItem = () => {
-    axios.delete(`${url}/admin/deleteitem/${item._id}`);
-    setShow(!show);
-  };
+function Item({ item, index, editable = false, handleShow }) {
+  const [toast, setToast] = useState({
+    open: false,
+    message: "",
+    variant: "",
+  });
 
   const addItem = (e) => {
-    toast.success(`${item.name} added to cart`, {
-      position: "top-center",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: true,
-      progress: undefined,
-      theme: "colored",
+    setToast({
+      open: true,
+      message: `${item.name} added to cart`,
+      variant: "success",
     });
-
     var name = e.target.name;
     var list = JSON.parse(localStorage.getItem("order"));
 
@@ -69,7 +27,24 @@ function Item({ item, index, editable = false }) {
 
   return (
     <>
-      <div className="Item">
+      {toast.open && (
+        <CustomToast
+          open={toast.open}
+          variant={toast.variant}
+          message={toast.message}
+          onClose={() =>
+            setToast({
+              open: false,
+              message: "",
+              variant: "",
+            })
+          }
+        />
+      )}
+      <div
+        className={`Item ${editable && "editable"}`}
+        onClick={() => editable && handleShow(item._id, item)}
+      >
         <div className="img-container">
           <img className="img" src={item.logo} alt={item.name} />
         </div>
@@ -79,117 +54,13 @@ function Item({ item, index, editable = false }) {
         </div>
         <div className="Order">
           <p className="Price">{"₹" + item.price}</p>
-          {editable ? (
-            <button
-              name={index}
-              className="Add"
-              onClick={() => handleShow(item)}
-            >
-              -
-            </button>
-          ) : (
-            <button className="Add" onClick={addItem}>
+          {!editable && (
+            <button name={index} className="Add" onClick={addItem}>
               +
             </button>
           )}
         </div>
       </div>
-
-      <Modal show={show} onHide={() => setShow(!show)}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            <h4>Change Menu Item</h4>
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <form>
-            <label>
-              Name:
-              <input
-                type="text"
-                name="name"
-                value={formValues.name}
-                onChange={handleChange}
-              />
-            </label>
-            <label>
-              Description:
-              <textarea
-                name="description"
-                value={formValues.description}
-                onChange={handleChange}
-              />
-            </label>
-            <label>
-              Logo:
-              <input
-                type="text"
-                name="logo"
-                value={formValues.logo}
-                onChange={handleChange}
-              />
-            </label>
-            <label>
-              Price:
-              <input
-                type="number"
-                name="price"
-                value={formValues.price}
-                onChange={handleChange}
-              />
-            </label>
-            <label>
-              Category:
-              <select
-                name="category"
-                value={formValues.category}
-                onChange={handleChange}
-              >
-                <option value="Breads">Breads</option>
-                <option value="Bevrages">Bevrages</option>
-                <option value="Desserts">Desserts</option>
-                <option value="Starters">Starters</option>
-                <option value="Main Course">Main Course</option>
-              </select>
-            </label>
-            <label>
-              Veg:
-              <label>
-                <input
-                  type="radio"
-                  name="veg"
-                  value="true"
-                  checked={formValues.veg === "true"}
-                  onChange={handleChange}
-                />
-                True
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="veg"
-                  value="false"
-                  checked={formValues.veg === "false"}
-                  onChange={handleChange}
-                />
-                False
-              </label>
-            </label>
-          </form>
-        </Modal.Body>
-        <Modal.Footer>
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={deleteItem}
-          >
-            Delete
-          </button>
-          <button type="button" className="btn btn-primary" onClick={editItem}>
-            Edit
-          </button>
-        </Modal.Footer>
-      </Modal>
     </>
   );
 }

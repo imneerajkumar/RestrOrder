@@ -1,40 +1,30 @@
 import React, { useEffect } from "react";
-import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
-import './App.css';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import "./App.css";
 import Header from "./Components/Header/Header";
 import Home from "./Pages/Home/Home";
 import Menu from "./Pages/Menu/Menu";
 import Checkout from "./Pages/Checkout/Checkout";
-import Admin from './Pages/Admin/Admin';
+import Admin from "./Pages/Admin/Admin";
 
 function App() {
   useEffect(() => {
-    if(localStorage.getItem("total")===null)
-      localStorage.setItem("total",0);
+    if (localStorage.getItem("total") === null)
+      localStorage.setItem("total", 0);
   }, []);
 
   return (
     <div className="App">
-      <Router>
+      <BrowserRouter>
         <Header />
-        <Switch>
-          <Route exact path="/">
-            <Home />
-          </Route>
-          <Route path="/checkout">
-            <Checkout />
-          </Route>
-          <Route path="/menu">
-            <Menu />
-          </Route>
-          <Route path="/admin">
-            <Admin />
-          </Route>
-          <Route path="*">
-            <Home />
-          </Route>
-        </Switch>
-      </Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/menu" element={<Menu />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="*" element={<Home />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }

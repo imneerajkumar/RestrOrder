@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Loader from "../../Components/UI/Loader";
 import "./Home.css";
 
 function Home() {
   const [loading, setLoading] = useState(true);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   function handleClick() {
-    history.push("/menu");
+    navigate("/menu");
   }
 
   useEffect(() => {

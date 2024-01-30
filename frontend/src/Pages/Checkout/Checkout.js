@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import jsPDF from "jspdf";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import Loader from "../../Components/UI/Loader";
+import CustomToast from "../../Components/UI/CustomToast";
 import "./Checkout.css";
 
 function loadScript(src) {
@@ -21,40 +20,18 @@ function loadScript(src) {
   });
 }
 
-toast.configure();
 function Checkout(props) {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [list, setList] = useState([]);
   const [[name, number, table], setDetails] = useState(["", "", ""]);
   const [hideCol, setHideCol] = useState("hidden");
   const [hideBtn, setHideBtn] = useState("show");
   const [loading, setLoading] = useState(true);
-
-  function giveAlert(message) {
-    toast.error(`Error: ${message}`, {
-      position: "top-center",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: true,
-      progress: undefined,
-      theme: "colored",
-    });
-  }
-
-  function giveSucess() {
-    toast.success("Placing your Order", {
-      position: "top-center",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: true,
-      progress: undefined,
-      theme: "colored",
-    });
-  }
+  const [toast, setToast] = useState({
+    open: false,
+    message: "",
+    variant: "",
+  });
 
   function clear() {
     var l = JSON.parse(localStorage.getItem("order"));
@@ -66,11 +43,35 @@ function Checkout(props) {
     localStorage.setItem("total", 0);
   }
 
+  function giveAlert(message, route) {
+    setToast({
+      open: true,
+      message: `Error: ${message}`,
+      variant: "error",
+    });
+    route &&
+      setTimeout(() => {
+        clear();
+        navigate(`${route}`);
+      }, 2000);
+  }
+
+  function giveSucess(message, route) {
+    setToast({
+      open: true,
+      message: `${message}`,
+      variant: "success",
+    });
+    setTimeout(() => {
+      clear();
+      navigate(`${route}`);
+    }, 2000);
+  }
+
   useEffect(() => {
     var total = localStorage.getItem("total");
     if (total <= 0) {
-      giveAlert("No order for Checkout");
-      history.push("/menu");
+      giveAlert("No order for Checkout", "/menu");
     }
 
     if (
@@ -94,7 +95,8 @@ function Checkout(props) {
       setList(temp);
       setTimeout(() => setLoading(false), 1500);
     }
-  }, [list, history]);
+    // eslint-disable-next-line
+  }, [list]);
 
   function handleAdd(e) {
     var key = Number(e.target.name);
@@ -130,8 +132,7 @@ function Checkout(props) {
     order[key] -= 1;
     total -= Number(li[key].price);
     if (total <= 0) {
-      giveAlert("No order for Checkout");
-      history.push("/menu");
+      giveAlert("No order for Checkout", "/menu");
     }
 
     localStorage.setItem("order", JSON.stringify(order));
@@ -213,20 +214,16 @@ function Checkout(props) {
     if (name.length > 0 && number.length === 10) {
       sendInvoice("Cash");
       printBill();
-      giveSucess();
-      clear();
-      history.push("/");
+      giveSucess("Please pay cash at counter for placing order.", "/");
     } else {
-      giveAlert("Please fill the correct details");
+      giveAlert("Please fill the correct details", "");
     }
   }
 
   function onlineSuccess() {
     sendInvoice("Online");
     printBill();
-    giveSucess();
-    clear();
-    history.push("/");
+    giveSucess("Order has been placed sucessfully.", "/");
   }
 
   async function displayRazorpay() {
@@ -273,7 +270,7 @@ function Checkout(props) {
     if (name.length > 0 && number.length === 10) {
       displayRazorpay();
     } else {
-      giveAlert("Please fill the correct details");
+      giveAlert("Please fill the correct details", "");
     }
   }
 
@@ -290,6 +287,20 @@ function Checkout(props) {
         <Loader />
       ) : (
         <div className="container checkout">
+          {toast.open && (
+            <CustomToast
+              open={toast.open}
+              variant={toast.variant}
+              message={toast.message}
+              onClose={() =>
+                setToast({
+                  open: false,
+                  message: "",
+                  variant: "",
+                })
+              }
+            />
+          )}
           <div className="row checkout-row">
             <div className={"col left " + hideCol}>
               <div className="Thank">THANK YOU FOR ORDERING</div>

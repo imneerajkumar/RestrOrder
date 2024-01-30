@@ -1,19 +1,19 @@
 import React from "react";
-import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
-import { Tooltip } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { Tooltip } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import "./UI.css";
 
 function Order(props) {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
-    <div onClick={() => history.push("/checkout")}>
+    <div onClick={() => navigate("/checkout")}>
       <Tooltip title="Checkout">
         <button
           className="cartbtn"
           style={{ display: "block" }}
-          onClick={() => history.push("/checkout")}
+          onClick={() => navigate("/checkout")}
         >
           <ShoppingCartIcon />
         </button>
