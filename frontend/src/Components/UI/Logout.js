@@ -1,17 +1,17 @@
-import React from 'react';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import { Tooltip } from '@material-ui/core';
-import './UI.css';
+import React from "react";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import { Tooltip } from "@mui/material";
+import "./UI.css";
 
 function Logout(props) {
   return (
     <Tooltip title="LOGOUT">
-      <button 
-        className='logout' 
-        style={{display: "block"}}
+      <button
+        className="logout"
+        style={{ display: "block" }}
         onClick={props.onClick}
       >
-        <ExitToAppIcon />  
+        <ExitToAppIcon />
       </button>
     </Tooltip>
   );

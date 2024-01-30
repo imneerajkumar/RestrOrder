@@ -80,6 +80,10 @@
   background-color: #ab2538;
 }
 
+.editable {
+  cursor: pointer;
+}
+
 @media screen and (max-width: 790px) {
   .img-container {
     width: 66px;

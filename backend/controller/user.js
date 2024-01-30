@@ -27,7 +27,7 @@ const makePayment = async (req, res) => {
       amount: response.amount,
     });
   } catch (error) {
-    console.log(error);
+    res.json({ message: error.message });
   }
 };
 
@@ -37,17 +37,17 @@ const getMenu = (req, res) => {
       return res.json(item);
     });
   } catch (error) {
-    console.log(error);
+    res.json({ message: error.message });
   }
 };
 
-const getInvoice = (req, res) => {
+const saveInvoice = (req, res) => {
   try {
     var obj = new Invoice(req.body);
-    obj.save();
+    obj.save().then(() => res.json({ message: `Invoice saved` }));
   } catch (error) {
-    console.log(error);
+    res.json({ message: erorr.message });
   }
 };
 
-module.exports = { makePayment, getMenu, getInvoice };
+module.exports = { makePayment, getMenu, saveInvoice };

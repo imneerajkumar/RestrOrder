@@ -1,47 +1,68 @@
-import React from 'react';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useState } from "react";
+import CustomToast from "../UI/CustomToast";
 import "./Item.css";
 
-toast.configure();
-function Item(props) {
-	const handleClick = (e) => {
-		toast.success(`${props.item.name} added to cart`, {
-			position: "top-center",
-			autoClose: 3000,
-			hideProgressBar: false,
-			closeOnClick: true,
-			pauseOnHover: false,
-			draggable: true,
-			progress: undefined,
-			theme: "colored"
-		});
+function Item({ item, index, editable = false, handleShow }) {
+  const [toast, setToast] = useState({
+    open: false,
+    message: "",
+    variant: "",
+  });
 
-		var name = e.target.name;
-		var list = JSON.parse(localStorage.getItem("order"));
+  const addItem = (e) => {
+    setToast({
+      open: true,
+      message: `${item.name} added to cart`,
+      variant: "success",
+    });
+    var name = e.target.name;
+    var list = JSON.parse(localStorage.getItem("order"));
 
-		list[Number(name)] += 1;
-		localStorage.setItem("order",JSON.stringify(list));
+    list[Number(name)] += 1;
+    localStorage.setItem("order", JSON.stringify(list));
 
-		var total = Number(localStorage.getItem("total"));
-		localStorage.setItem("total", total+Number(props.item.price));
-	}
+    var total = Number(localStorage.getItem("total"));
+    localStorage.setItem("total", total + Number(item.price));
+  };
 
-	return (
-		<div className="Item">
-			<div className="img-container">
-				<img className="img" src={props.item.logo} alt={props.item.name} />
-			</div>
-			<div className="Details">
-				<p className="Name">{props.item.name}</p>
-				<p className="Description">{props.item.description}</p>
-			</div>
-			<div className="Order">
-				<p className="Price">{"₹" +props.item.price}</p>
-				<button name={props.index} className="Add" onClick={handleClick}>+</button>
-			</div>
-		</div>
-	);
+  return (
+    <>
+      {toast.open && (
+        <CustomToast
+          open={toast.open}
+          variant={toast.variant}
+          message={toast.message}
+          onClose={() =>
+            setToast({
+              open: false,
+              message: "",
+              variant: "",
+            })
+          }
+        />
+      )}
+      <div
+        className={`Item ${editable && "editable"}`}
+        onClick={() => editable && handleShow(item._id, item)}
+      >
+        <div className="img-container">
+          <img className="img" src={item.logo} alt={item.name} />
+        </div>
+        <div className="Details">
+          <p className="Name">{item.name}</p>
+          <p className="Description">{item.description}</p>
+        </div>
+        <div className="Order">
+          <p className="Price">{"₹" + item.price}</p>
+          {!editable && (
+            <button name={index} className="Add" onClick={addItem}>
+              +
+            </button>
+          )}
+        </div>
+      </div>
+    </>
+  );
 }
 
 export default Item;

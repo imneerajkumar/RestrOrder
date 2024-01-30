@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
 import Login from "../../Components/Login/Login";
 import Invoice from "../../Components/Invoice/Invoice";
 import Loader from "../../Components/UI/Loader";
-import "react-toastify/dist/ReactToastify.css";
 import Logout from "../../Components/UI/Logout";
+import EditMenu from "../../Components/EditMenu/EditMenu";
+import CustomToast from "../../Components/UI/CustomToast";
+import "./Admin.css";
 
 function Admin(props) {
   const [isAuth, setIsAuth] = useState(false);
   const [invoices, setInvoices] = useState([]);
   const [servedInvoices, setServedInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState("invoice");
+  const [toast, setToast] = useState({
+    open: false,
+    message: "",
+    variant: "",
+  });
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -38,15 +45,10 @@ function Admin(props) {
   }, [isAuth]);
 
   function giveAlert(message) {
-    toast.error(`Error: ${message}`, {
-      position: "top-center",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: true,
-      progress: undefined,
-      theme: "colored",
+    setToast({
+      open: true,
+      message: `Error: ${message}`,
+      variant: "error",
     });
   }
 
@@ -64,12 +66,16 @@ function Admin(props) {
         setIsAuth(true);
         setTimeout(() => setLoading(false), 1500);
       } else {
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
         giveAlert(response.data.message);
-        setTimeout(() => setLoading(false), 1000);
       }
     } catch (error) {
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
       giveAlert(error.message);
-      setTimeout(() => setLoading(false), 1500);
     }
   };
 
@@ -83,16 +89,48 @@ function Admin(props) {
   return (
     <div>
       {loading && <Loader />}
-      {!loading && isAuth === false && <Login handleLogin={handleLogin} />}
+      {!loading && isAuth === false && (
+        <>
+          {toast.open && (
+            <CustomToast
+              open={toast.open}
+              variant={toast.variant}
+              message={toast.message}
+              onClose={() =>
+                setToast({
+                  open: false,
+                  message: "",
+                  variant: "",
+                })
+              }
+            />
+          )}
+          <Login handleLogin={handleLogin} />
+        </>
+      )}
       {!loading && isAuth === true && (
         <>
           <Logout onClick={handleLogout} />
-          {invoices?.map((item, key) => (
-            <Invoice key={key} index={key} invoice={item} />
-          ))}
-          {servedInvoices?.map((item, key) => (
-            <Invoice key={key} index={key} invoice={item} />
-          ))}
+          <div className="admin-tabs">
+            <div className="tab" onClick={() => setTab("invoice")}>
+              Orders
+            </div>
+            <div className="tab" onClick={() => setTab("menu")}>
+              Menu
+            </div>
+          </div>
+          {tab === "invoice" ? (
+            <div>
+              {invoices?.map((item, key) => (
+                <Invoice key={key} index={key} invoice={item} />
+              ))}
+              {servedInvoices?.map((item, key) => (
+                <Invoice key={key} index={key} invoice={item} />
+              ))}
+            </div>
+          ) : (
+            <EditMenu />
+          )}
         </>
       )}
     </div>
