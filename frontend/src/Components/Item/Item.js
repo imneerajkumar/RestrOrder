@@ -45,7 +45,7 @@ function Item({ item, index, editable = false, handleShow }) {
         className={`Item ${editable && "editable"}`}
         onClick={() => editable && handleShow(item._id, item)}
       >
-        <div className="img-container">
+        <div className={`img-container ${item.veg === "true" && "veg"}`}>
           <img className="img" src={item.logo} alt={item.name} />
         </div>
         <div className="Details">
@@ -55,7 +55,11 @@ function Item({ item, index, editable = false, handleShow }) {
         <div className="Order">
           <p className="Price">{"₹" + item.price}</p>
           {!editable && (
-            <button name={index} className="Add" onClick={addItem}>
+            <button
+              name={index}
+              className={`Add ${item.veg === "true" && "veg"}`}
+              onClick={addItem}
+            >
               +
             </button>
           )}

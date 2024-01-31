@@ -28,10 +28,25 @@ export default function EditMenu() {
     }));
   };
 
+  const filterMenu = (data) => {
+    const set = new Set("");
+    data.forEach((item) => set.add(item.category));
+    const categories = Array.from(set);
+    categories.forEach((category) => {
+      let temp = [];
+      data.forEach((item) => {
+        if (item.category === category) {
+          temp.push(item);
+        }
+      });
+      setMenu((list) => [...list, temp]);
+    });
+  };
+
   const getMenu = async () => {
     setFormValues({});
     await axios.get(`${url}/admin/getMenu`).then((res) => {
-      setMenu(res.data);
+      filterMenu(res.data);
     });
     setTimeout(() => setLoading(false), 1000);
   };
@@ -115,14 +130,19 @@ export default function EditMenu() {
               }
             />
           )}
-          {menu?.map((item, key) => (
-            <Item
-              item={item}
-              key={key}
-              index={key}
-              editable={true}
-              handleShow={handleShow}
-            />
+          {menu?.map((data, key) => (
+            <div key={key}>
+              <h1>{data[0]?.category}</h1>
+              {data?.map((item, key) => (
+                <Item
+                  item={item}
+                  key={key}
+                  index={key}
+                  editable={true}
+                  handleShow={handleShow}
+                />
+              ))}
+            </div>
           ))}
           <Modal
             show={show}
