@@ -21,6 +21,7 @@ export default function CustomToast(props) {
         autoHideDuration={2000}
         onClose={handleClose}
         message={props.message}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
         <Alert
           onClose={handleClose}

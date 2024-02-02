@@ -87,7 +87,7 @@ function Admin(props) {
   };
 
   return (
-    <div>
+    <div className="Admin">
       {loading && <Loader />}
       {!loading && isAuth === false && (
         <>
@@ -120,7 +120,7 @@ function Admin(props) {
             </div>
           </div>
           {tab === "invoice" ? (
-            <div>
+            <div className="invoice-tab">
               {invoices?.map((item, key) => (
                 <Invoice key={key} index={key} invoice={item} />
               ))}
