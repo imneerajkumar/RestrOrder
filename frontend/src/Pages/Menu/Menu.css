@@ -1,5 +1,13 @@
-.menu {
+.Menu {
+  width: 100%;
+  padding: 75px 0 25px 0;
+}
+.menu-title {
   color: #ab2538;
   font-size: 3rem;
   font-weight: 900;
+}
+.category {
+  font-weight: 700;
+  display: inline;
 }

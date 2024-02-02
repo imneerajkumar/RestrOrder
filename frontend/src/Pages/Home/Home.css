@@ -1,9 +1,9 @@
 .Home {
   width: 100%;
-}
-
-.home {
-  margin: 4.5% auto !important;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .image {
@@ -11,14 +11,14 @@
 }
 
 .details {
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: center !important;
-  align-items: center !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .name {
-  font-size: 4rem;
+  font-size: 6rem;
   font-weight: 900;
   color: #ab2538;
 }
@@ -39,8 +39,16 @@
   font-size: 1.5rem;
 }
 
-@media screen and (max-width: 990px) {
+@media screen and (max-width: 992px) {
   .rowHome {
     flex-direction: column;
+  }
+  .name {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #ab2538;
+  }
+  .image {
+    width: 70%;
   }
 }

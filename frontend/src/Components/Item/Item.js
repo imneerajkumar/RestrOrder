@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import CustomToast from "../UI/CustomToast";
 import "./Item.css";
 
-function Item({ item, index, editable = false, handleShow }) {
+function Item({ item, index, editable = false, handleShow, list }) {
   const [toast, setToast] = useState({
     open: false,
     message: "",
@@ -15,11 +15,16 @@ function Item({ item, index, editable = false, handleShow }) {
       message: `${item.name} added to cart`,
       variant: "success",
     });
-    var name = e.target.name;
-    var list = JSON.parse(localStorage.getItem("order"));
+    var idx = 0;
+    list.forEach((element, index) => {
+      if (element.name === e.target.name) {
+        idx = index;
+      }
+    });
 
-    list[Number(name)] += 1;
-    localStorage.setItem("order", JSON.stringify(list));
+    var localList = JSON.parse(localStorage.getItem("order"));
+    localList[idx] += 1;
+    localStorage.setItem("order", JSON.stringify(localList));
 
     var total = Number(localStorage.getItem("total"));
     localStorage.setItem("total", total + Number(item.price));
@@ -45,7 +50,7 @@ function Item({ item, index, editable = false, handleShow }) {
         className={`Item ${editable && "editable"}`}
         onClick={() => editable && handleShow(item._id, item)}
       >
-        <div className="img-container">
+        <div className={`img-container ${item.veg === "true" && "veg"}`}>
           <img className="img" src={item.logo} alt={item.name} />
         </div>
         <div className="Details">
@@ -55,7 +60,11 @@ function Item({ item, index, editable = false, handleShow }) {
         <div className="Order">
           <p className="Price">{"₹" + item.price}</p>
           {!editable && (
-            <button name={index} className="Add" onClick={addItem}>
+            <button
+              name={item.name}
+              className={`Add ${item.veg === "true" && "veg"}`}
+              onClick={addItem}
+            >
               +
             </button>
           )}

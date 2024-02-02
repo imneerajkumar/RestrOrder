@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import Loader from "../UI/Loader";
 import Item from "../Item/Item";
-import { Button, Modal } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import CustomToast from "../UI/CustomToast";
 import axios from "axios";
+import "./EditMenu.css";
 
 export default function EditMenu() {
   const url = process.env.REACT_APP_API_URL;
   const [menu, setMenu] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [show, setShow] = useState(false);
   const [add, setAdd] = useState(false);
   const [id, setId] = useState("");
@@ -28,10 +29,27 @@ export default function EditMenu() {
     }));
   };
 
+  const filterMenu = (data) => {
+    setMenu([]);
+    const set = new Set("");
+    data.forEach((item) => set.add(item.category));
+    const categories = Array.from(set);
+    categories.forEach((category) => {
+      let temp = [];
+      data.forEach((item) => {
+        if (item.category === category) {
+          temp.push(item);
+        }
+      });
+      setMenu((list) => [...list, temp]);
+    });
+  };
+
   const getMenu = async () => {
+    setLoading(true);
     setFormValues({});
     await axios.get(`${url}/admin/getMenu`).then((res) => {
-      setMenu(res.data);
+      filterMenu(res.data);
     });
     setTimeout(() => setLoading(false), 1000);
   };
@@ -69,7 +87,7 @@ export default function EditMenu() {
       message: `${item.name}: ${res.data.message}`,
       variant: "success",
     });
-    getMenu();
+    await getMenu();
   };
 
   const handleShow = (id, item) => {
@@ -86,6 +104,7 @@ export default function EditMenu() {
       });
     } else {
       setAdd(true);
+      setFormValues({});
     }
     setShow(true);
   };
@@ -96,11 +115,13 @@ export default function EditMenu() {
   }, []);
 
   return (
-    <div>
+    <div className="Menu mt-2">
       {loading && <Loader />}
       {!loading && (
-        <div className="Menu">
-          <Button onClick={handleShow}>Add Item</Button>
+        <div>
+          <button className="new-button" onClick={handleShow}>
+            Add New Item
+          </button>
           {toast.open && (
             <CustomToast
               open={toast.open}
@@ -115,14 +136,19 @@ export default function EditMenu() {
               }
             />
           )}
-          {menu?.map((item, key) => (
-            <Item
-              item={item}
-              key={key}
-              index={key}
-              editable={true}
-              handleShow={handleShow}
-            />
+          {menu?.map((data, key) => (
+            <div key={key}>
+              <h1 className="category">{data[0]?.category}</h1>
+              {data?.map((item, key) => (
+                <Item
+                  item={item}
+                  key={key}
+                  index={key}
+                  editable={true}
+                  handleShow={handleShow}
+                />
+              ))}
+            </div>
           ))}
           <Modal
             show={show}
@@ -137,44 +163,49 @@ export default function EditMenu() {
             </Modal.Header>
             <Modal.Body>
               <form>
-                <label>
-                  Name:
+                <div class="mb-2">
+                  <label className="form-label">Name:</label>
                   <input
+                    className="form-control"
                     type="text"
                     name="name"
                     value={formValues.name}
                     onChange={handleChange}
                   />
-                </label>
-                <label>
-                  Description:
+                </div>
+                <div class="mb-2">
+                  <label className="form-label">Description:</label>
                   <textarea
+                    className="form-control"
                     name="description"
                     value={formValues.description}
                     onChange={handleChange}
                   />
-                </label>
-                <label>
-                  Logo:
+                </div>
+                <div class="mb-2">
+                  <label className="form-label">Logo:</label>
                   <input
+                    className="form-control"
                     type="text"
                     name="logo"
                     value={formValues.logo}
                     onChange={handleChange}
                   />
-                </label>
-                <label>
-                  Price:
+                </div>
+                <div class="mb-2">
+                  <label className="form-label">Price:</label>
                   <input
+                    className="form-control"
                     type="number"
                     name="price"
                     value={formValues.price}
                     onChange={handleChange}
                   />
-                </label>
-                <label>
-                  Category:
+                </div>
+                <div class="mb-2">
+                  <label className="form-label">Category:</label>
                   <select
+                    className="form-select"
                     name="category"
                     value={formValues.category}
                     onChange={handleChange}
@@ -185,37 +216,39 @@ export default function EditMenu() {
                     <option value="Starters">Starters</option>
                     <option value="Main Course">Main Course</option>
                   </select>
-                </label>
-                <label>
-                  Veg:
-                  <label>
+                </div>
+                <div class="mb-2 form-veg">
+                  <label className="form-check-label">Veg:</label>
+                  <div className="form-check">
                     <input
+                      className="form-check-input"
                       type="radio"
                       name="veg"
                       value="true"
                       checked={formValues.veg === "true"}
                       onChange={handleChange}
                     />
-                    True
-                  </label>
-                  <label>
+                    <label className="form-check-label">True</label>
+                  </div>
+                  <div className="form-check">
                     <input
+                      className="form-check-input"
                       type="radio"
                       name="veg"
                       value="false"
                       checked={formValues.veg === "false"}
                       onChange={handleChange}
                     />
-                    False
-                  </label>
-                </label>
+                    <label className="form-check-label">False</label>
+                  </div>
+                </div>
               </form>
             </Modal.Body>
             <Modal.Footer>
               {!add && (
                 <button
                   type="button"
-                  className="btn btn-secondary"
+                  className="btn btn-secondary btn-delete"
                   onClick={() => deleteItem(id, formValues)}
                 >
                   Delete
@@ -224,7 +257,7 @@ export default function EditMenu() {
               {!add && (
                 <button
                   type="button"
-                  className="btn btn-primary"
+                  className="btn btn-primary btn-edit"
                   onClick={() => editItem(id, formValues)}
                 >
                   Edit
@@ -233,7 +266,7 @@ export default function EditMenu() {
               {add && (
                 <button
                   type="button"
-                  className="btn btn-primary"
+                  className="btn btn-primary btn-add"
                   onClick={() => addItem(formValues)}
                 >
                   Add

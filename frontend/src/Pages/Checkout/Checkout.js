@@ -53,7 +53,7 @@ function Checkout(props) {
       setTimeout(() => {
         clear();
         navigate(`${route}`);
-      }, 2000);
+      }, 1500);
   }
 
   function giveSucess(message, route) {
@@ -65,7 +65,7 @@ function Checkout(props) {
     setTimeout(() => {
       clear();
       navigate(`${route}`);
-    }, 2000);
+    }, 1500);
   }
 
   useEffect(() => {
@@ -286,7 +286,7 @@ function Checkout(props) {
       {loading ? (
         <Loader />
       ) : (
-        <div className="container checkout">
+        <div className="container row checkout-row">
           {toast.open && (
             <CustomToast
               open={toast.open}
@@ -301,86 +301,90 @@ function Checkout(props) {
               }
             />
           )}
-          <div className="row checkout-row">
-            <div className={"col left " + hideCol}>
-              <div className="Thank">THANK YOU FOR ORDERING</div>
-              <div className={"fills " + hideCol}>
-                <div className="inst">Please fill the details below:</div>
-                <div className="ind">
-                  <div className="label">Name :</div>
-                  <input
-                    className="input"
-                    type="text"
-                    value={name}
-                    onChange={handleName}
-                  />
-                </div>
-                <div className="ind">
-                  <div className="label">Phone:</div>
-                  <input
-                    className="input"
-                    type="number"
-                    value={number}
-                    onChange={handlePhone}
-                    maxLength={10}
-                  />
-                </div>
-                <div className="ind">
-                  <div className="label">Table:</div>
-                  <input
-                    className="input"
-                    type="number"
-                    value={table}
-                    onChange={handleTable}
-                  />
-                </div>
+          <div className={"Thank " + hideCol}>THANK YOU FOR ORDERING</div>
+          <div className={"col left " + hideCol}>
+            <div className={"fills " + hideCol}>
+              <div className="inst">Please fill the details below:</div>
+              <div className="form-floating">
+                <input
+                  className="form-control"
+                  placeholder="Your Name"
+                  type="text"
+                  id="name"
+                  value={name}
+                  onChange={handleName}
+                />
+                <label htmlFor="name">Your Name</label>
               </div>
-              <div className="bill">
-                <button className="pay cash" onClick={payCash}>
-                  Cash Payment
-                </button>
-                <button className="pay upi" onClick={payOnline}>
-                  UPI - PayTM, PhonePe..
-                </button>
+              <div className="form-floating">
+                <input
+                  className="form-control"
+                  type="number"
+                  placeholder="98XXXXXXXX"
+                  value={number}
+                  onChange={handlePhone}
+                  maxLength={10}
+                  id="phone"
+                />
+                <label htmlFor="phone">Phone Number</label>
+              </div>
+              <div className="form-floating">
+                <input
+                  className="form-control"
+                  placeholder="Table Number"
+                  type="number"
+                  value={table}
+                  onChange={handleTable}
+                  id="table"
+                />
+                <label htmlFor="table">Table Number</label>
               </div>
             </div>
-            <div className="col right">
-              <div className="Total">
-                Total: {"₹" + localStorage.getItem("total")}
-              </div>
-              <div className="Items">
-                {list.map((item, key) => {
-                  return (
-                    <div className="item" key={key}>
-                      <div className="order">
-                        <p className="Name">{item.name}</p>
-                        <p className="Price">{"₹ " + item.price}</p>
-                      </div>
-                      <div className={"changeBtns " + hideBtn}>
-                        <button
-                          name={item.key}
-                          className="change"
-                          onClick={handleSubtract}
-                        >
-                          -
-                        </button>
-                        <button
-                          name={item.key}
-                          className="change"
-                          onClick={handleAdd}
-                        >
-                          +
-                        </button>
-                        <p className={"qty"}>{item.qty}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              <button className={"confirm " + hideBtn} onClick={checkout}>
-                Checkout
+            <div className="bill">
+              <button className="pay cash" onClick={payCash}>
+                Cash Payment
+              </button>
+              <button className="pay upi" onClick={payOnline}>
+                UPI - PayTM, PhonePe..
               </button>
             </div>
+          </div>
+          <div className="col right">
+            <div className="Total">
+              Total: {"₹" + localStorage.getItem("total")}
+            </div>
+            <div className="Items">
+              {list.map((item, key) => {
+                return (
+                  <div className="item" key={key}>
+                    <div className="order">
+                      <p className="Name">{item.name}</p>
+                      <p className="Price">{"₹ " + item.price}</p>
+                    </div>
+                    <div className={"changeBtns " + hideBtn}>
+                      <button
+                        name={item.key}
+                        className="change"
+                        onClick={handleSubtract}
+                      >
+                        -
+                      </button>
+                      <button
+                        name={item.key}
+                        className="change"
+                        onClick={handleAdd}
+                      >
+                        +
+                      </button>
+                      <p className={"qty"}>{item.qty}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <button className={"confirm " + hideBtn} onClick={checkout}>
+              Checkout
+            </button>
           </div>
         </div>
       )}
