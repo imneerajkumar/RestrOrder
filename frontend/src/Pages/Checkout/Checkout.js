@@ -4,7 +4,9 @@ import axios from "axios";
 import jsPDF from "jspdf";
 import Loader from "../../Components/UI/Loader";
 import CustomToast from "../../Components/UI/CustomToast";
+import { useDispatch, useSelector } from "react-redux";
 import "./Checkout.css";
+import { addToCart, clearCart, removeFromCart } from "../../store/action";
 
 function loadScript(src) {
   return new Promise((resolve) => {
@@ -22,26 +24,22 @@ function loadScript(src) {
 
 function Checkout(props) {
   const navigate = useNavigate();
-  const [list, setList] = useState([]);
-  const [[name, number, table], setDetails] = useState(["", "", ""]);
+  const dispatch = useDispatch();
+  const cart = useSelector((state) => state.cart);
+  const total = useSelector((state) => state.total);
+  const [details, setDetails] = useState({
+    name: "",
+    number: "",
+    table: "",
+  });
   const [hideCol, setHideCol] = useState("hidden");
   const [hideBtn, setHideBtn] = useState("show");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({
     open: false,
     message: "",
     variant: "",
   });
-
-  function clear() {
-    var l = JSON.parse(localStorage.getItem("order"));
-    for (var i = 0; i < l.length; i++) {
-      l[i] = 0;
-    }
-
-    localStorage.setItem("order", JSON.stringify(l));
-    localStorage.setItem("total", 0);
-  }
 
   function giveAlert(message, route) {
     setToast({
@@ -51,7 +49,6 @@ function Checkout(props) {
     });
     route &&
       setTimeout(() => {
-        clear();
         navigate(`${route}`);
       }, 1500);
   }
@@ -63,112 +60,49 @@ function Checkout(props) {
       variant: "success",
     });
     setTimeout(() => {
-      clear();
-      navigate(`${route}`);
-    }, 1500);
+      setLoading(true);
+      dispatch(clearCart());
+    }, 1000);
   }
 
-  useEffect(() => {
-    var total = localStorage.getItem("total");
-    if (total <= 0) {
-      giveAlert("No order for Checkout", "/menu");
-    }
-
-    if (
-      list.length === 0 &&
-      localStorage.getItem("order") !== null &&
-      localStorage.getItem("list") !== null
-    ) {
-      var temp = [];
-      var order = JSON.parse(localStorage.getItem("order"));
-      var li = JSON.parse(localStorage.getItem("list"));
-
-      order.forEach((val, key) => {
-        if (val > 0)
-          temp.push({
-            key: key,
-            name: li[key].name,
-            price: li[key].price,
-            qty: val,
-          });
+  function sendInvoice(mode, paymentId = "Cash", orderId = details.name) {
+    setLoading(true);
+    try {
+      const url = process.env.REACT_APP_API_URL;
+      const list = Object.keys(cart).map((key) => cart[key]);
+      axios.post(`${url}/user/print`, {
+        list: list,
+        name: details.name,
+        number: details.number,
+        table: details.table,
+        total: Number(total),
+        paid: mode === "Online" ? true : false,
+        served: false,
+        paymentId: paymentId,
+        orderId: orderId,
       });
-      setList(temp);
-      setTimeout(() => setLoading(false), 1500);
+      setLoading(false);
+      giveSucess(
+        mode === "Online"
+          ? "Order has been placed sucessfully."
+          : "Please pay cash at counter for placing order.",
+        "/"
+      );
+    } catch (err) {
+      setLoading(false);
+      giveAlert(
+        "Error in generating Invoice. Please Go to Counter with bill.",
+        "/"
+      );
     }
-    // eslint-disable-next-line
-  }, [list]);
-
-  function handleAdd(e) {
-    var key = Number(e.target.name);
-    var order = JSON.parse(localStorage.getItem("order"));
-    var li = JSON.parse(localStorage.getItem("list"));
-    var total = JSON.parse(localStorage.getItem("total"));
-    var temp = [];
-
-    order[key] += 1;
-    total += Number(li[key].price);
-    localStorage.setItem("order", JSON.stringify(order));
-    localStorage.setItem("total", JSON.stringify(total));
-
-    order.forEach((val, key) => {
-      if (val > 0)
-        temp.push({
-          key: key,
-          name: li[key].name,
-          price: li[key].price,
-          qty: val,
-        });
-    });
-    setList(temp);
   }
 
-  function handleSubtract(e) {
-    var key = Number(e.target.name);
-    var order = JSON.parse(localStorage.getItem("order"));
-    var li = JSON.parse(localStorage.getItem("list"));
-    var total = localStorage.getItem("total");
-    var temp = [];
-
-    order[key] -= 1;
-    total -= Number(li[key].price);
-    if (total <= 0) {
-      giveAlert("No order for Checkout", "/menu");
-    }
-
-    localStorage.setItem("order", JSON.stringify(order));
-    localStorage.setItem("total", JSON.stringify(total));
-
-    order.forEach((val, key) => {
-      if (val > 0)
-        temp.push({
-          key: key,
-          name: li[key].name,
-          price: li[key].price,
-          qty: val,
-        });
-    });
-    setList(temp);
-  }
-
-  function handleName(e) {
-    setDetails([e.target.value, number, table]);
-  }
-
-  function handlePhone(e) {
-    setDetails([name, e.target.value, table]);
-  }
-
-  function handleTable(e) {
-    setDetails([name, number, e.target.value]);
-  }
-
-  function printBill() {
-    var total = localStorage.getItem("total");
+  function printBill(paymentId = "Cash", orderId = details.name) {
     const doc = new jsPDF("p", "pt");
 
     doc.text(200, 30, "Restro Order - Your Bill");
-    doc.text(70, 50, `Name: ${name}`);
-    doc.text(360, 50, `Phone No.: ${number}`);
+    doc.text(70, 50, `Name: ${details.name}`);
+    doc.text(360, 50, `Phone No.: ${details.number}`);
     doc.text(
       0,
       60,
@@ -183,12 +117,12 @@ function Checkout(props) {
 
     var i = 120;
     var c = 1;
-    list.forEach((item) => {
+    Object.keys(cart).forEach((key) => {
       doc.text(25, i, `${c}. `);
-      doc.text(75, i, `${item.name}`);
-      doc.text(255, i, `Qty: ${item.qty}`);
-      doc.text(325, i, `Rs.${item.price}`);
-      doc.text(455, i, `Rs.${item.qty * item.price}`);
+      doc.text(75, i, `${cart[key].name}`);
+      doc.text(255, i, `Qty: ${cart[key].qty}`);
+      doc.text(325, i, `Rs.${cart[key].price}`);
+      doc.text(455, i, `Rs.${cart[key].qty * cart[key].price}`);
       i = i + 40;
       c = c + 1;
     });
@@ -196,34 +130,17 @@ function Checkout(props) {
     doc.save("Bill.pdf");
   }
 
-  function sendInvoice(mode) {
-    const url = process.env.REACT_APP_API_URL;
-    axios.post(`${url}/user/print`, {
-      list: list,
-      name: name,
-      number: number,
-      table: table,
-      total: Number(localStorage.getItem("total")),
-      mode: mode,
-      paid: mode === "Online" ? true : false,
-      served: false,
-    });
-  }
-
   function payCash() {
-    if (name.length > 0 && number.length === 10) {
-      sendInvoice("Cash");
+    if (
+      details.name.length > 0 &&
+      details.number.length === 10 &&
+      details.table.length === 2
+    ) {
       printBill();
-      giveSucess("Please pay cash at counter for placing order.", "/");
+      sendInvoice("Cash");
     } else {
       giveAlert("Please fill the correct details", "");
     }
-  }
-
-  function onlineSuccess() {
-    sendInvoice("Online");
-    printBill();
-    giveSucess("Order has been placed sucessfully.", "/");
   }
 
   async function displayRazorpay() {
@@ -237,7 +154,7 @@ function Checkout(props) {
     }
     const url = process.env.REACT_APP_API_URL;
     const response = await axios.post(`${url}/user/razorpay`, {
-      amount: Number(localStorage.getItem("total")),
+      amount: Number(total),
     });
 
     const options = {
@@ -249,17 +166,17 @@ function Checkout(props) {
       description: "Thank you for Ordering.",
       image: `${url}/logo`,
       handler: function (response) {
-        alert(
-          `PaymentId: ${response.razorpay_payment_id}`,
-          `OrderId: ${response.razorpay_order_id}`,
-          `Signature: ${response.razorpay_signature}`
+        printBill(response.razorpay_payment_id, response.razorpay_order_id);
+        sendInvoice(
+          "Online",
+          response.razorpay_payment_id,
+          response.razorpay_order_id
         );
-        onlineSuccess();
       },
       prefill: {
-        name: name,
+        name: details.name,
         email: "example@gmail.com",
-        phone_number: number,
+        phone_number: details.number,
       },
     };
     const paymentObject = new window.Razorpay(options);
@@ -267,128 +184,154 @@ function Checkout(props) {
   }
 
   function payOnline() {
-    if (name.length > 0 && number.length === 10) {
+    if (
+      details.name.length > 0 &&
+      details.number.length === 10 &&
+      details.table.length === 2
+    ) {
       displayRazorpay();
     } else {
       giveAlert("Please fill the correct details", "");
     }
   }
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setDetails((details) => ({
+      ...details,
+      [name]: value,
+    }));
+  };
+
   function checkout() {
-    if (localStorage.getItem("total") > 0) {
+    if (total > 0) {
       setHideCol("show");
       setHideBtn("hidden");
     }
   }
 
+  function handleAdd(item) {
+    dispatch(addToCart(item));
+  }
+
+  function handleSubtract(id) {
+    dispatch(removeFromCart(id));
+  }
+
+  useEffect(() => {
+    if (total <= 0) {
+      giveAlert("No order for checkout", "/");
+    }
+    // eslint-disable-next-line
+  }, [total]);
+
   return (
-    <div className="Checkout">
-      {loading ? (
-        <Loader />
-      ) : (
-        <div className="container row checkout-row">
-          {toast.open && (
-            <CustomToast
-              open={toast.open}
-              variant={toast.variant}
-              message={toast.message}
-              onClose={() =>
-                setToast({
-                  open: false,
-                  message: "",
-                  variant: "",
-                })
-              }
-            />
-          )}
-          <div className={"Thank " + hideCol}>THANK YOU FOR ORDERING</div>
-          <div className={"col left " + hideCol}>
-            <div className={"fills " + hideCol}>
-              <div className="inst">Please fill the details below:</div>
-              <div className="form-floating">
-                <input
-                  className="form-control"
-                  placeholder="Your Name"
-                  type="text"
-                  id="name"
-                  value={name}
-                  onChange={handleName}
-                />
-                <label htmlFor="name">Your Name</label>
+    <>
+      {loading && <Loader />}
+      {!loading && (
+        <div className="Checkout">
+          <div className="container row checkout-row">
+            {toast.open && (
+              <CustomToast
+                open={toast.open}
+                variant={toast.variant}
+                message={toast.message}
+                onClose={() =>
+                  setToast({
+                    open: false,
+                    message: "",
+                    variant: "",
+                  })
+                }
+              />
+            )}
+            <div className={"Thank " + hideCol}>THANK YOU FOR ORDERING</div>
+            <div className={"col left " + hideCol}>
+              <div className={"fills " + hideCol}>
+                <div className="inst">Please fill the details below:</div>
+                <div className="form-floating">
+                  <input
+                    className="form-control"
+                    placeholder="Your Name"
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={details.name}
+                    onChange={handleChange}
+                  />
+                  <label htmlFor="name">Your Name</label>
+                </div>
+                <div className="form-floating">
+                  <input
+                    className="form-control"
+                    type="number"
+                    placeholder="98XXXXXXXX"
+                    name="number"
+                    value={details.number}
+                    onChange={handleChange}
+                    maxLength={10}
+                    id="phone"
+                  />
+                  <label htmlFor="phone">Phone Number</label>
+                </div>
+                <div className="form-floating">
+                  <input
+                    className="form-control"
+                    placeholder="Table Number"
+                    type="number"
+                    name="table"
+                    value={details.table}
+                    onChange={handleChange}
+                    id="table"
+                  />
+                  <label htmlFor="table">Table Number</label>
+                </div>
               </div>
-              <div className="form-floating">
-                <input
-                  className="form-control"
-                  type="number"
-                  placeholder="98XXXXXXXX"
-                  value={number}
-                  onChange={handlePhone}
-                  maxLength={10}
-                  id="phone"
-                />
-                <label htmlFor="phone">Phone Number</label>
-              </div>
-              <div className="form-floating">
-                <input
-                  className="form-control"
-                  placeholder="Table Number"
-                  type="number"
-                  value={table}
-                  onChange={handleTable}
-                  id="table"
-                />
-                <label htmlFor="table">Table Number</label>
+              <div className="bill">
+                <button className="pay cash" onClick={payCash}>
+                  Cash Payment
+                </button>
+                <button className="pay upi" onClick={payOnline}>
+                  UPI - PayTM, PhonePe..
+                </button>
               </div>
             </div>
-            <div className="bill">
-              <button className="pay cash" onClick={payCash}>
-                Cash Payment
-              </button>
-              <button className="pay upi" onClick={payOnline}>
-                UPI - PayTM, PhonePe..
-              </button>
-            </div>
-          </div>
-          <div className="col right">
-            <div className="Total">
-              Total: {"₹" + localStorage.getItem("total")}
-            </div>
-            <div className="Items">
-              {list.map((item, key) => {
-                return (
+            <div className="col right">
+              <div className="Total">Total: ₹ {total}</div>
+              <div className="Items">
+                {Object.keys(cart).map((key) => (
                   <div className="item" key={key}>
                     <div className="order">
-                      <p className="Name">{item.name}</p>
-                      <p className="Price">{"₹ " + item.price}</p>
+                      <p className="Name">{cart[key].name}</p>
+                      <p className="Price">{"₹ " + cart[key].price}</p>
                     </div>
                     <div className={"changeBtns " + hideBtn}>
                       <button
-                        name={item.key}
                         className="change"
-                        onClick={handleSubtract}
+                        onClick={() => handleSubtract(key)}
                       >
                         -
                       </button>
                       <button
-                        name={item.key}
                         className="change"
-                        onClick={handleAdd}
+                        onClick={() => handleAdd(cart[key])}
                       >
                         +
                       </button>
-                      <p className={"qty"}>{item.qty}</p>
+                      <p className={"qty"}>{cart[key].qty}</p>
                     </div>
                   </div>
-                );
-              })}
+                ))}
+              </div>
+              <button className={"confirm " + hideBtn} onClick={checkout}>
+                Checkout
+              </button>
             </div>
-            <button className={"confirm " + hideBtn} onClick={checkout}>
-              Checkout
-            </button>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
 
