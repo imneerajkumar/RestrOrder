@@ -62,7 +62,7 @@ function Checkout(props) {
     setTimeout(() => {
       setLoading(true);
       dispatch(clearCart());
-    }, 1000);
+    }, 1500);
   }
 
   function sendInvoice(mode, paymentId = "Cash", orderId = details.name) {
