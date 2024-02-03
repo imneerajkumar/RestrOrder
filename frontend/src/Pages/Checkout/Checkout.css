@@ -59,7 +59,7 @@
   font-weight: 800;
 }
 .item {
-  width: 100%;
+  width: 80%;
   background: #fdc273;
   margin: 10px auto;
   padding: 1% 20px;
@@ -112,7 +112,7 @@
   border-radius: 10px;
   background-color: #ab2538;
   color: #fff;
-  width: 100%;
+  width: 80%;
   font-size: 1.5rem;
   font-weight: 600;
   margin-top: 20px;
@@ -157,5 +157,11 @@
     height: 20px;
     width: 20px;
     border-radius: 10px;
+  }
+  .item {
+    width: 100%;
+  }
+  .confirm {
+    width: 100%;
   }
 }
