@@ -1,33 +1,24 @@
 import React, { useState } from "react";
 import CustomToast from "../UI/CustomToast";
 import "./Item.css";
+import { addToCart } from "../../store/action";
+import { useDispatch } from "react-redux";
 
-function Item({ item, index, editable = false, handleShow, list }) {
+function Item({ item, editable = false, handleShow }) {
+  const dispatch = useDispatch();
   const [toast, setToast] = useState({
     open: false,
     message: "",
     variant: "",
   });
 
-  const addItem = (e) => {
+  const addItem = () => {
     setToast({
       open: true,
       message: `${item.name} added to cart`,
       variant: "success",
     });
-    var idx = 0;
-    list.forEach((element, index) => {
-      if (element.name === e.target.name) {
-        idx = index;
-      }
-    });
-
-    var localList = JSON.parse(localStorage.getItem("order"));
-    localList[idx] += 1;
-    localStorage.setItem("order", JSON.stringify(localList));
-
-    var total = Number(localStorage.getItem("total"));
-    localStorage.setItem("total", total + Number(item.price));
+    dispatch(addToCart(item));
   };
 
   return (
@@ -61,7 +52,6 @@ function Item({ item, index, editable = false, handleShow, list }) {
           <p className="Price">{"₹" + item.price}</p>
           {!editable && (
             <button
-              name={item.name}
               className={`Add ${item.veg === "true" && "veg"}`}
               onClick={addItem}
             >

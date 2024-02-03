@@ -11,14 +11,15 @@ const menuSchema = {
 const Menu = mongoose.model("Menu", menuSchema);
 
 const invoiceSchema = {
-  list: [{ key: Number, name: String, price: String, qty: Number }],
+  list: [],
   name: String,
   number: String,
   table: Number,
   total: Number,
-  mode: String,
   paid: Boolean,
   served: Boolean,
+  paymentId: String,
+  orderId: String,
 };
 const Invoice = mongoose.model("Invoice", invoiceSchema);
 
