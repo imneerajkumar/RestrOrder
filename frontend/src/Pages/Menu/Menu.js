@@ -13,13 +13,16 @@ function Menu(props) {
 
   const getMenuList = () => {
     dispatch(getMenu());
-    setTimeout(() => setLoading(false), 1500);
   };
 
   useEffect(() => {
-    getMenuList();
+    if (menu.length === 0) {
+      getMenuList();
+    } else {
+      setLoading(false);
+    }
     // eslint-disable-next-line
-  }, []);
+  }, [menu]);
 
   return (
     <>
